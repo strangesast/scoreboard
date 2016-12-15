@@ -1,0 +1,12 @@
+<div class="small-container list shadow">
+  <div class="list-heading">Games</div>
+  <div class="empty list-item" *ngIf="!games.length">NONE</div>
+  <div *ngFor="let game of games" [attr.id]="game.id" class="hoverdarken hoverlink list-item game">
+    <span (click)="onRemoveGame(game)" class="icon close hoverdarken"></span>
+    <span class="name">{{ game.name }}</span>
+    <span class="spacer"></span>
+    <span class="description">{{ game.description }}</span>
+  </div>
+  <hr>
+  <a class="new list-item hoverdarken hoverlink nostyle" [routerLink]="['/games', 'new']">Create New</a>
+</div>

@@ -1,0 +1,24 @@
+.hoverunderline {
+  text-decoration: none;
+  color: inherit;
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+@nav-height: 60px;
+nav {
+  display: flex;
+  flex-direction: row;
+  & > .title {
+    font-size: 1.5em;
+  }
+  height: @nav-height;
+  line-height: @nav-height;
+  box-sizing: border-box;
+  & > * {
+    padding: 0 4px;
+  }
+  border-bottom: solid 0.1em black;
+}

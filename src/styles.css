@@ -1,1 +1,52 @@
 /* You can add global styles to this file, and also import other style files */
+body, html {
+  margin: 0;
+}
+.nostyle {
+  text-decoration: none;
+  color: inherit;
+}
+.hoverlink:hover {
+  cursor: pointer;
+}
+.hoverdarken:hover {
+  background: rgba(0,0,0,0.05);
+}
+.spacer {
+  flex-grow: 1;
+}
+.small-container {
+  max-width: 400px;
+  box-sizing: border-box;
+  border: solid 0.1em black;
+  margin: 0 auto;
+}
+.small-container.shadow {
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+.list {
+  display: flex;
+  flex-direction: column;
+}
+.list > .list-heading {
+  font-size: 1.5em;
+  border-bottom: solid 0.05em black;
+}
+.list > .list-item , .list > .list-heading{
+  padding: 16px 20px;
+}
+.padded {
+  padding: 16px 20px;
+}
+form .form-group {
+  margin-bottom: 10px;
+}
+form .form-group label {
+  display: block;
+}
+.close:before {
+  content: '\2715';
+}
+.icon {
+  padding: 4px;
+}
