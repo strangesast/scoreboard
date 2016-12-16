@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Resolve } from '@angular/router';
+import { Router, ActivatedRouteSnapshot, Resolve } from '@angular/router';
 
 import { GameElement } from '../classes';
 
-import { BehaviorSubject, Observable } from 'rxjs/Rx';
+import { Subscription, BehaviorSubject, Observable } from 'rxjs/Rx';
 
 const GAME_STORE_NAME = 'games';
 
@@ -17,10 +17,10 @@ function random():string {
   return (Math.random().toString(36)+'00000000000000000').slice(2, 10+2);
 }
 
-const STORE_NAME = "sportsync";
+const DB_NAME = "sportsync";
 const STORE_VERSION = 1;
 let initObjectStore = function(): Promise<any> {
-  let name = STORE_NAME;
+  let name = DB_NAME;
   let version = STORE_VERSION;
   return new Promise((resolve, reject) => {
     let request = indexedDB.open(name, version);
@@ -99,27 +99,42 @@ let removeFromStore = function(db, storeName, id): Promise<any> {
 
 
 @Injectable()
-export class GameService {
+export class GameService implements Resolve<GameElement[]> {
   private objectStore: IDBObjectStore;
-  private games: BehaviorSubject<GameElement[]>;
+  public games: BehaviorSubject<GameElement[]>;
   public ready: boolean = false;
+
+  private gameSub: Subscription;
 
   constructor() { }
 
-  resolve() {
-    return this.init()
+  resolve(route: ActivatedRouteSnapshot) {
+    return this.init();
   }
 
-  init():any {
-    return this.objectStore ? Promise.resolve(this.objectStore) : initObjectStore().then(db=>{
+  init():Promise<BehaviorSubject<GameElement[]>> {
+    return (this.objectStore ? Promise.resolve(this.objectStore) : initObjectStore().then(db=>{
+      console.log('db', db);
       this.objectStore = db;
       return db;
-    }).then(db=>{
+    })).then(db=>{
       return getAllFromStore(db, GAME_STORE_NAME).then(results => {
         this.games = new BehaviorSubject(<GameElement[]>results.map(GameElement.fromObject.bind(GameElement)));
+        if(!this.gameSub) this.gameSub = this.monitorChanges(this.games);
         this.ready = true;
         return this.games;
       });
+    });
+  }
+
+  monitorChanges(ob) {
+    // unnecessarily saves all games
+    return ob.concatMap(arr => {
+      return Observable.fromPromise(Promise.all(arr.map(game => {
+        return saveToStore(this.objectStore, GAME_STORE_NAME, game)
+      })));
+    }).subscribe(saveResult=>{
+      console.log(this.games.getValue(), saveResult);
     });
   }
 

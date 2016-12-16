@@ -10,6 +10,7 @@ import { GamePageComponent } from './games/game-page/game-page.component';
 import { AdminPageComponent } from './admin/admin-page/admin-page.component';
 import { HomeComponent } from './home/home.component';
 import { NewGameComponent } from './games/game-list/new-game/new-game.component';
+import { TimerComponent } from './timer/timer.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { NewGameComponent } from './games/game-list/new-game/new-game.component'
     GamePageComponent,
     AdminPageComponent,
     HomeComponent,
-    NewGameComponent
+    NewGameComponent,
+    TimerComponent
   ],
   imports: [
     BrowserModule,

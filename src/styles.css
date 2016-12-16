@@ -9,8 +9,16 @@ body, html {
 .hoverlink:hover {
   cursor: pointer;
 }
+.hoverunderline {
+  color: inherit;
+  text-decoration: none;
+}
+.hoverunderline:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
 .hoverdarken:hover {
-  background: rgba(0,0,0,0.05);
+  background: rgba(0,0,0,0.05) !important;
 }
 .spacer {
   flex-grow: 1;
@@ -32,8 +40,17 @@ body, html {
   font-size: 1.5em;
   border-bottom: solid 0.05em black;
 }
+.list > .list-heading.border-top {
+  border-top: solid 0.05em black;
+}
 .list > .list-item , .list > .list-heading{
   padding: 16px 20px;
+}
+.list > .list-item.flex {
+  display: flex;
+}
+.list > .list-item.empty {
+  color: grey;
 }
 .padded {
   padding: 16px 20px;
@@ -49,4 +66,10 @@ form .form-group label {
 }
 .icon {
   padding: 4px;
+}
+.form-group > input.invalid, .form-group > textarea.invalid {
+  background: rgba(255, 0, 0, 0.1);
+}
+.form-group > .description {
+  display: block;
 }

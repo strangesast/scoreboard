@@ -3,7 +3,7 @@
   <div class="empty list-item" *ngIf="!games.length">NONE</div>
   <div *ngFor="let game of games" [attr.id]="game.id" class="hoverdarken hoverlink list-item game">
     <span (click)="onRemoveGame(game)" class="icon close hoverdarken"></span>
-    <span class="name">{{ game.name }}</span>
+    <a class="name hoverunderline" [routerLink]="['/games', game.id]">{{ game.name }}</a>
     <span class="spacer"></span>
     <span class="description">{{ game.description }}</span>
   </div>

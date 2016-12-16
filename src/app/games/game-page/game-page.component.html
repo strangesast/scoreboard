@@ -1,3 +1,43 @@
-<p>
-  game-page works!
-</p>
+<div class="small-container shadow">
+  <div class="padded">
+    <h1>{{ game.name }}</h1>
+    <p>{{ game.description }}</p>
+    <form *ngIf="isEditing" novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+      <div class="form-group">
+        <label>Name</label>
+        <input placeholder="new game" [class.invalid]="form.touched && !form.controls['name'].valid" type="string" formControlName="name">
+        <small class="description">Give this game a name. (i.e. East vs West)</small>
+        <div *ngIf="form.get('name').hasError('minlength') && form.get('name').touched">Game name must be at least 5 characters long.</div>
+        <div *ngIf="form.get('name').hasError('required') && form.get('name').touched">Game must have a name.</div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea formControlName="description"></textarea>
+        <small class="description">What is unique about this game?</small>
+      </div>
+      <button type="submit" [disabled]="!form.valid || !form.dirty">Save</button>
+    </form>
+    <button class="hoverlink hoverdarken edit" (click)="toggleEdit()">{{ isEditing ? 'Cancel' : 'Edit' }}</button>
+  </div>
+  <div class="list">
+    <div class="list-heading border-top">Scores</div>
+    <div class="list-item flex">
+      <span>Game A</span>
+      <span class="spacer"></span>
+      <span class="score">10</span>
+    </div>
+    <div class="list-item flex">
+      <span>Game B</span>
+      <span class="spacer"></span>
+      <span class="score">9</span>
+    </div>
+    <hr>
+  </div>
+  <div class="list">
+    <div class="list-heading border-top">Timers</div>
+    <app-timer class="list-item hoverdarken" *ngFor="let timer of game.timers" [timer]="timer" [clock]="clock"></app-timer>
+    <div class="list-item empty" *ngIf="!game.timers.length">NO TIMERS</div>
+    <hr>
+    <div (click)="createNewTimer()" class="hoverdarken list-item hoverlink">Create A New Timer</div>
+  </div>
+</div>

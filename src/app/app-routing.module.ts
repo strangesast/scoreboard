@@ -9,15 +9,18 @@ import { AdminPageComponent } from './admin/admin-page/admin-page.component';
 import { HomeComponent } from './home/home.component';
 
 import { GameService } from './games/game.service';
+import { GamePageResolveService } from './games/game-page/game-page-resolve.service';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'games', resolve: {
-    gameService: GameService
+    games: GameService
   }, children: [
     { path: '', component: GameListComponent },
     { path: 'new', component: NewGameComponent },
-    { path: ':gameId', component: GamePageComponent }
+    { path: ':id', component: GamePageComponent, resolve: {
+      game: GamePageResolveService
+    } }
   ] },
   { path: 'admin', component: AdminPageComponent }
 ];
@@ -30,7 +33,8 @@ const routes: Routes = [
     RouterModule
   ],
   providers: [
-    GameService
+    GameService,
+    GamePageResolveService
   ]
 })
 export class AppRoutingModule { }
