@@ -2,6 +2,7 @@
   <div class="padded">
     <h1>{{ game.name }}</h1>
     <p>{{ game.description }}</p>
+    <button class="hoverlink hoverdarken edit betterfocus" (click)="toggleEdit()">{{ isEditing ? 'Cancel' : 'Edit' }}</button>
     <form *ngIf="isEditing" novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
       <div class="form-group">
         <label>Name</label>
@@ -17,7 +18,6 @@
       </div>
       <button type="submit" [disabled]="!form.valid || !form.dirty">Save</button>
     </form>
-    <button class="hoverlink hoverdarken edit" (click)="toggleEdit()">{{ isEditing ? 'Cancel' : 'Edit' }}</button>
   </div>
   <div class="list">
     <div class="list-heading border-top">Scores</div>
@@ -35,7 +35,7 @@
   </div>
   <div class="list">
     <div class="list-heading border-top">Timers</div>
-    <app-timer class="list-item hoverdarken" *ngFor="let timer of game.timers" [timer]="timer" [clock]="clock"></app-timer>
+    <app-timer (onAction)="handleAction($event)" class="list-item hoverdarken" *ngFor="let timer of game.timers" [timer]="timer" [clock]="clock"></app-timer>
     <div class="list-item empty" *ngIf="!game.timers.length">NO TIMERS</div>
     <hr>
     <div (click)="createNewTimer()" class="hoverdarken list-item hoverlink">Create A New Timer</div>

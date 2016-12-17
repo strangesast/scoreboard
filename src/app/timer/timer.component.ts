@@ -1,4 +1,4 @@
-import { Input, Output, Component, OnInit, OnChanges } from '@angular/core';
+import { Input, Output, EventEmitter, Component, OnInit, OnChanges } from '@angular/core';
 
 import { Timer } from '../classes';
 import { Subject,Observable } from 'rxjs';
@@ -13,6 +13,7 @@ export class TimerComponent implements OnInit {
 
   private timerState: Subject<any>;
   private time: number;
+  @Output() private onAction = new EventEmitter<{type: string, target:any}>();
 
   private timeStep: number = 100;
   @Input() clock: Observable<any>; // sync clocks
@@ -24,8 +25,10 @@ export class TimerComponent implements OnInit {
     this.time = 0;
 
     this.timerState.switchMap(timer=>{
+      timer.lastStart = new Date();
+      console.log('timer', timer);
       return (this.clock || Observable.interval(this.timeStep)).map((t) => {
-        this.time+=1;
+        this.time=Date.now()-timer.lastStart;
       })
     }).subscribe();
 
@@ -34,5 +37,9 @@ export class TimerComponent implements OnInit {
 
   ngOnChanges(changes) {
 
+  }
+
+  remove() {
+    this.onAction.emit({type: 'remove', target: this.timer});
   }
 }

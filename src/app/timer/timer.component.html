@@ -1,3 +1,4 @@
-<span>{{ timer.name }}</span>
+<span (click)="remove()" class="icon close hoverlink"></span>
+<span class="name">{{ timer.name }}</span>
 <span class="spacer"></span>
-<span class="time">{{ time }}</span>
+<span class="time">{{ time | date:'mm:ss' }}</span>

@@ -46,12 +46,12 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
   subscribeTo(g):Subscription {
     return g.subscribe(res=>{
-      if(res !== this.game) {
-        this.isEditing = false;
+      this.isEditing = false;
+      if(this.form) {
         this.form.patchValue(res);
         this.form.markAsPristine();
-        this.game = res;
       }
+      this.game = res;
     });
   };
 
@@ -66,7 +66,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
   }
 
   toggleEdit() {
-    if(this.isEditing) {
+    if(this.isEditing && this.form) {
       this.form.patchValue(this.game);
     }
     this.isEditing = !this.isEditing;
@@ -75,6 +75,20 @@ export class GamePageComponent implements OnInit, OnDestroy {
   createNewTimer() {
     let timer = new Timer('new timer', 'a new timer');
     this.gameSubject.next(Object.assign({}, this.game, {timers: this.game.timers.concat(timer)}));
+  }
+
+  handleAction({type, target}) {
+    if(type == 'remove') {
+      this.removeTimer(target);
+    }
+  }
+
+  removeTimer(timer:Timer) {
+    let game = this.gameSubject.getValue();
+    let i = game.timers.indexOf(timer);
+    if(i == -1) throw new Error('timer already removed');
+    game.timers.splice(i, 1);
+    this.gameSubject.next(this.game);
   }
 
 }
