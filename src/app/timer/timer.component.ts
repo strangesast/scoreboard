@@ -25,10 +25,8 @@ export class TimerComponent implements OnInit {
     this.time = 0;
 
     this.timerState.switchMap(timer=>{
-      timer.lastStart = new Date();
-      console.log('timer', timer);
       return (this.clock || Observable.interval(this.timeStep)).map((t) => {
-        this.time=Date.now()-timer.lastStart;
+        this.time=this.timer.accum();
       })
     }).subscribe();
 

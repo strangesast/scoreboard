@@ -24,9 +24,30 @@ export class Timer {
   ) { }
 
   reset() {
+    let tot = this.accum();
     this.lastStart = -1;
     this.lastStop = -1;
     this.accumulated = 0;
+    return tot;
+  }
+
+  start() {
+    this.lastStart = Number(Date.now());
+    return this.lastStart;
+  }
+
+  accum() {
+    if(this.lastStart == -1) return 0;
+    console.log((this.lastStop > this.lastStart ? (this.lastStop - this.lastStart) : (Date.now() - this.lastStart)) + this.accumulated);
+
+    return (this.lastStop > this.lastStart ? (this.lastStop - this.lastStart) : (Date.now() - this.lastStart)) + this.accumulated;
+  }
+
+  stop() {
+    if(this.lastStart == -1) throw new Error('already stopped');
+    this.lastStop = Number(Date.now());
+    this.accumulated = this.accumulated + this.lastStop - this.lastStart
+    return this.lastStop;
   }
 
   static fromObject(obj: any) {

@@ -74,6 +74,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
   createNewTimer() {
     let timer = new Timer('new timer', 'a new timer');
+    timer.start();
+    console.log(timer);
     this.gameSubject.next(Object.assign({}, this.game, {timers: this.game.timers.concat(timer)}));
   }
 
