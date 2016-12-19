@@ -22,19 +22,35 @@ export class TimerComponent implements OnInit {
 
   ngOnInit() {
     this.timerState = new Subject();
-    this.time = 0;
+    this.time = this.timer.accum();
 
     this.timerState.switchMap(timer=>{
-      return (this.clock || Observable.interval(this.timeStep)).map((t) => {
-        this.time=this.timer.accum();
-      })
-    }).subscribe();
+      console.log('new timer', timer);
+      return timer.state == 'running' ?
+        this.clock.map((t) =>timer.accum()) : // update ever clock tic
+        Observable.of(this.timer.accum()); // update once (on change)
+    }).subscribe(time => {
+      this.time = time;
+    });
 
     this.timerState.next(this.timer);
   }
 
   ngOnChanges(changes) {
 
+  }
+
+  onStart() {
+    this.timer.start();
+    this.onAction.emit({type: 'start', target: this.timer});
+  }
+  onStop() {
+    this.timer.stop();
+    this.onAction.emit({type: 'stop', target: this.timer});
+  }
+  onReset() {
+    this.timer.reset();
+    this.onAction.emit({type: 'reset', target: this.timer});
   }
 
   remove() {

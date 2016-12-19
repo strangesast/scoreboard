@@ -114,7 +114,6 @@ export class GameService implements Resolve<GameElement[]> {
 
   init():Promise<BehaviorSubject<GameElement[]>> {
     return (this.objectStore ? Promise.resolve(this.objectStore) : initObjectStore().then(db=>{
-      console.log('db', db);
       this.objectStore = db;
       return db;
     })).then(db=>{

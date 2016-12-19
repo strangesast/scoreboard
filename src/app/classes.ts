@@ -32,21 +32,21 @@ export class Timer {
   }
 
   start() {
-    this.lastStart = Number(Date.now());
+    if(this.lastStart != -1) throw new Error('already started');
+    this.lastStart = Date.now();
     return this.lastStart;
   }
 
   accum() {
-    if(this.lastStart == -1) return 0;
-    console.log((this.lastStop > this.lastStart ? (this.lastStop - this.lastStart) : (Date.now() - this.lastStart)) + this.accumulated);
-
-    return (this.lastStop > this.lastStart ? (this.lastStop - this.lastStart) : (Date.now() - this.lastStart)) + this.accumulated;
+    if(this.lastStart == -1) return this.accumulated;
+    return this.accumulated + (this.lastStop > this.lastStart ? (this.lastStop - this.lastStart) : (Date.now() - this.lastStart));
   }
 
   stop() {
-    if(this.lastStart == -1) throw new Error('already stopped');
-    this.lastStop = Number(Date.now());
-    this.accumulated = this.accumulated + this.lastStop - this.lastStart
+    if(this.lastStart == -1 || this.lastStop > this.lastStart) throw new Error('already stopped');
+    this.lastStop = Date.now();
+    this.accumulated += (this.lastStop - this.lastStart);
+    this.lastStart = -1;
     return this.lastStop;
   }
 
@@ -56,5 +56,34 @@ export class Timer {
     t.lastStart = obj.lastStart;
     t.accumulated = obj.accumulated;
     return t;
+  }
+
+  get state() {
+    if(this.lastStart != -1 && this.lastStart > this.lastStop) {
+      return 'running';
+    } else if (this.lastStop != -1 && this.lastStop > this.lastStart) {
+      return 'stopped';
+    } else if (this.lastStart == -1) {
+      return 'reset';
+    } else {
+      throw new Error('invalid state');
+    }
+  }
+  set state(newState:string) {
+    switch(newState) {
+      case 'running':
+        this.lastStart = Date.now();
+        break;
+      case 'stopped':
+        this.lastStop = Date.now();
+        break;
+      case 'reset':
+        this.lastStart = -1;
+        this.lastStop = -1;
+        this.accumulated = 0;
+        break;
+      default:
+        throw new Error('invalid state');
+    }
   }
 }

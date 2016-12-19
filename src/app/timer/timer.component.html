@@ -1,4 +1,7 @@
 <span (click)="remove()" class="icon close hoverlink"></span>
 <span class="name">{{ timer.name }}</span>
 <span class="spacer"></span>
-<span class="time">{{ time | date:'mm:ss' }}</span>
+<button (click)="onStart()">Start</button>
+<button (click)="onStop()">Stop</button>
+<button (click)="onReset()">Reset</button>
+<span class="time"><code>{{ time | date:'mm:ss' }}</code></span>

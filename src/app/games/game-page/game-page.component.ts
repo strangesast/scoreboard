@@ -20,7 +20,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
   private game: GameElement 
   private form: FormGroup;
   private isEditing: boolean = false;
-  private clock: Observable<any> = Observable.interval(100);
+  private clock: Observable<any> = Observable.interval(1000).share(); //share is key
 
   constructor(private formBuilder: FormBuilder, private gameService: GameService, private route: ActivatedRoute) { }
 
@@ -75,13 +75,14 @@ export class GamePageComponent implements OnInit, OnDestroy {
   createNewTimer() {
     let timer = new Timer('new timer', 'a new timer');
     timer.start();
-    console.log(timer);
     this.gameSubject.next(Object.assign({}, this.game, {timers: this.game.timers.concat(timer)}));
   }
 
   handleAction({type, target}) {
     if(type == 'remove') {
       this.removeTimer(target);
+    } else if (['start', 'stop', 'reset'].indexOf(type) != -1) {
+      this.updateTimer(target);
     }
   }
 
@@ -93,4 +94,11 @@ export class GamePageComponent implements OnInit, OnDestroy {
     this.gameSubject.next(this.game);
   }
 
+  updateTimer(timer:Timer) {
+    let game = this.gameSubject.getValue();
+    let i = game.timers.indexOf(timer);
+    if(i == -1) throw new Error('timer already removed');
+    game.timers[i] = timer;
+    this.gameSubject.next(this.game);
+  }
 }
