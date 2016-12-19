@@ -11,6 +11,7 @@ import { AdminPageComponent } from './admin/admin-page/admin-page.component';
 import { HomeComponent } from './home/home.component';
 import { NewGameComponent } from './games/game-list/new-game/new-game.component';
 import { TimerComponent } from './timer/timer.component';
+import { TimeMsPipe } from './timer/time-ms.pipe';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { TimerComponent } from './timer/timer.component';
     AdminPageComponent,
     HomeComponent,
     NewGameComponent,
-    TimerComponent
+    TimerComponent,
+    TimeMsPipe
   ],
   imports: [
     BrowserModule,
