@@ -3,12 +3,16 @@
 import { TestBed, async, inject } from '@angular/core/testing';
 import { GamePageResolveService } from './game-page-resolve.service';
 
-import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+
+import { GameService } from '../game.service';
 
 describe('GamePageResolveService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ GamePageResolveService, Router ]
+      providers: [ GamePageResolveService, RouterModule, GameService ],
+      imports: [ RouterTestingModule ]
     });
   });
 

@@ -32,7 +32,6 @@ export class NewGameComponent implements OnInit {
     if(this.form.valid) {
       this.gameService.saveNewGame(this.form.value).subscribe(
         (newGame)=>{
-          console.log('update', newGame);
           this.savedGame = newGame;
         },
         (error)=>{
@@ -41,7 +40,6 @@ export class NewGameComponent implements OnInit {
           this.saveError = error;
         },
         () => {
-          console.log('complete!');
           this.saveError = null;
           setTimeout(()=>this.router.navigate(['/games'], { fragment: this.savedGame.id }), 1000);
         }

@@ -10,15 +10,14 @@ import { Subject, BehaviorSubject, ReplaySubject, Observable } from 'rxjs';
 })
 export class TimerComponent implements OnInit {
   @Input() timer: Timer;
+  @Input() clock: Observable<any>; // sync clocks
+  @Output() private onAction = new EventEmitter<{type: string, target:any}>();
 
   private timerState: BehaviorSubject<any>;
   private time:ReplaySubject<number> = new ReplaySubject(1);
   private timeInstance: number = 0;
 
-  @Output() private onAction = new EventEmitter<{type: string, target:any}>();
 
-  private timeStep: number = 100;
-  @Input() clock: Observable<any>; // sync clocks
 
   constructor() { }
 

@@ -85,7 +85,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     if(type == 'remove') {
       this.removeTimer(target);
     } else if (['start', 'stop', 'reset'].indexOf(type) != -1) {
-      console.log(target);
       this.updateTimer(target);
     }
   }

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 
-import { BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+
+import { GameElement } from '../app/classes';
 
 @Injectable()
 export class ActivatedRouteStub {
@@ -17,4 +19,8 @@ export class ActivatedRouteStub {
   get snapshot() {
     return { params: this.testParams };
   }
+
+  public data = Observable.of({
+    game: new BehaviorSubject(new GameElement('0', 'test', 'test game'))
+  });
 }

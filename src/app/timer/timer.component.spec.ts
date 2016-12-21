@@ -3,10 +3,13 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { TimerComponent } from './timer.component';
+import { Observable } from 'rxjs';
+
 import { RouterTestingModule } from '@angular/router/testing';
-import { Timer } from '../classes';
-import { TimeMsPipe } from './time-ms.pipe';
+
+import { TimerComponent } from './timer.component';
+import { TimeMsPipe }     from './time-ms.pipe';
+import { Timer }          from '../classes';
 
 describe('TimerComponent', () => {
   let component: TimerComponent;
@@ -27,6 +30,7 @@ describe('TimerComponent', () => {
 
     timer = new Timer('test', 'test timer');
     component.timer = timer;
+    component.clock = Observable.interval(100);
 
     fixture.detectChanges();
   });
