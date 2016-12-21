@@ -101,7 +101,12 @@ let removeFromStore = function(db, storeName, id): Promise<any> {
 @Injectable()
 export class GameService implements Resolve<GameElement[]> {
   private objectStore: IDBObjectStore;
+
   public games: BehaviorSubject<GameElement[]>;
+  // game -> games -> indexeddb
+  // indexeddb -> games -> game
+
+
   public ready: boolean = false;
 
   private gameSub: Subscription;

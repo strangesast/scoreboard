@@ -1,7 +1,7 @@
 import { Input, Output, EventEmitter, Component, OnInit, OnChanges } from '@angular/core';
 
 import { Timer } from '../classes';
-import { Subject,Observable } from 'rxjs';
+import { Subject, BehaviorSubject, ReplaySubject, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-timer',
@@ -11,8 +11,10 @@ import { Subject,Observable } from 'rxjs';
 export class TimerComponent implements OnInit {
   @Input() timer: Timer;
 
-  private timerState: Subject<any>;
-  private time: number;
+  private timerState: BehaviorSubject<any>;
+  private time:ReplaySubject<number> = new ReplaySubject(1);
+  private timeInstance: number = 0;
+
   @Output() private onAction = new EventEmitter<{type: string, target:any}>();
 
   private timeStep: number = 100;
@@ -21,23 +23,20 @@ export class TimerComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.timerState = new Subject();
-    this.time = this.timer.accum();
+    this.timerState = new BehaviorSubject(this.timer);
 
     this.timerState.switchMap(timer=>{
-      console.log('new timer', timer);
       return timer.state == 'running' ?
         this.clock.map((t) =>timer.accum()) : // update ever clock tic
-        Observable.of(this.timer.accum()); // update once (on change)
-    }).subscribe(time => {
-      this.time = time;
-    });
+        Observable.of(timer.accum()); // update once (on change)
+    }).subscribe(this.time);
 
-    this.timerState.next(this.timer);
+    this.time.subscribe(t=>{
+      this.timeInstance=t;
+    });
   }
 
   ngOnChanges(changes) {
-
   }
 
   onStart() {
@@ -52,7 +51,6 @@ export class TimerComponent implements OnInit {
     this.timer.reset();
     this.onAction.emit({type: 'reset', target: this.timer});
   }
-
   remove() {
     this.onAction.emit({type: 'remove', target: this.timer});
   }
