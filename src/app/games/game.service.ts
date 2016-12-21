@@ -6,101 +6,110 @@ import { GameElement } from '../classes';
 import { Subscription, BehaviorSubject, Observable } from 'rxjs/Rx';
 
 const GAME_STORE_NAME = 'games';
-
-// indexes like "{ on: string,  name: string,  unique: boolean, multiEntry: boolean }"
+const DB_NAME = 'sportsync';
+const STORE_VERSION = 1;
+// indexes like '{ on: string,  name: string,  unique: boolean, multiEntry: boolean }'
 const stores = [
   { name: GAME_STORE_NAME, keypath: 'id', indexes: []}
-]; 
+];
 
 // for id generation
-function random():string {
-  return (Math.random().toString(36)+'00000000000000000').slice(2, 10+2);
+function random(): string {
+  return (Math.random().toString(36) + '00000000000000000').slice(2, 10 + 2);
+};
+
+// probably a bit excessive
+interface IDBEventTarget extends EventTarget {
+  result: any;
+  error: Error;
 }
 
-const DB_NAME = "sportsync";
-const STORE_VERSION = 1;
-let initObjectStore = function(): Promise<any> {
-  let name = DB_NAME;
-  let version = STORE_VERSION;
-  return new Promise((resolve, reject) => {
-    let request = indexedDB.open(name, version);
+interface IDBEvent extends Event, ErrorEvent, IDBVersionChangeEvent {
+  target: IDBEventTarget;
+  getMessage(): string;
+}
 
-    request.onupgradeneeded = (e:any) => {
-      let db = e.target.result;
+function initObjectStore(name: string, version: number): Promise<any> {
+  return new Promise(function(resolve, reject) {
+    let request = window.indexedDB.open(name, version);
 
-      let createStore = (name, keypath, indexes) => {
-        let store = db.createObjectStore(name, { keyPath: keypath });
-        indexes.forEach((index)=> {
+    request.onupgradeneeded = function(evt: IDBEvent) {
+      let db = evt.target.result;
+
+      let createStore = function(storeName: string, keypath: string, indexes: any[]) {
+        let store = db.createObjectStore(storeName, { keyPath: keypath });
+        indexes.forEach(function(index) {
           store.createIndex(index.name, index.on, { unique: index.unique, multiEntry: !!index.multiEntry });
         });
-      }
+      };
 
-      let trans = e.target.transaction;
+      let trans = (<any>evt.target).transaction;
 
-      stores.forEach((store)=> {
-        if(db.objectStoreNames.contains(store.name)) {
+      stores.forEach(function(store) {
+        if (db.objectStoreNames.contains(store.name)) {
           db.deleteObjectStore(store.name);
         }
         createStore(store.name, store.keypath, store.indexes);
       });
 
-      trans.onsuccess = (e) => {
+      trans.onsuccess = function(e: IDBEvent) {
         resolve(db);
-      }
+      };
     };
 
-    request.onsuccess = (e:any) => {
-      let db = e.target.result;
+    request.onsuccess = function(evt: IDBEvent) {
+      let db = evt.target.result;
       resolve(db);
     };
   });
-}
-let getAllFromStore = function(db, storeName): Promise<any[]> {
-  return new Promise((resolve, reject) => {
-    let trans = db.transaction([storeName]);
-    let store = trans.objectStore(storeName);
-    let req = store.getAll();
-    req.onsuccess = (e)=>{
-      resolve(e.target.result);
-    }
-    req.onerror = (e)=>{
-      reject(e.target.error);
-    }
-  });
-}
+};
 
-let saveToStore = function(db, storeName, obj): Promise<any> {
-  return new Promise((resolve, reject) => {
-    let trans = db.transaction([storeName], 'readwrite');
+function getAllFromStore(db: IDBDatabase, storeName: string): Promise<any[]> {
+  return new Promise(function(resolve, reject) {
+    let trans = db.transaction(storeName);
+    let store = <any>trans.objectStore(storeName);
+    let req = store.getAll();
+    req.onsuccess = function(e: IDBEvent) {
+      resolve(e.target.result);
+    };
+    req.onerror = function(e: IDBEvent) {
+      reject(e.target.error);
+    };
+  });
+};
+
+function saveToStore(db: IDBDatabase, storeName: string, obj: any): Promise<any> {
+  return new Promise(function(resolve, reject) {
+    let trans = db.transaction(storeName, 'readwrite');
     let store = trans.objectStore(storeName);
     let req = store.put(obj);
-    req.onsuccess = (e) => {
+    req.onsuccess = function(e: IDBEvent) {
       resolve(e.target.result);
-    }
-    req.onerror = (e) => {
+    };
+    req.onerror = function(e: IDBEvent) {
       reject(e.target.error);
-    }
+    };
   });
-}
+};
 
-let removeFromStore = function(db, storeName, id): Promise<any> {
-  return new Promise((resolve, reject) => {
-    let trans = db.transaction([storeName], 'readwrite');
+function removeFromStore(db: IDBDatabase, storeName: string, id: string): Promise<any> {
+  return new Promise(function(resolve, reject) {
+    let trans = db.transaction(storeName, 'readwrite');
     let store = trans.objectStore(storeName);
     let req = store.delete(id);
-    req.onsuccess = (e) => {
+    req.onsuccess = function(e: IDBEvent) {
       resolve(e.target.result);
-    }
-    req.onerror = (e) => {
+    };
+    req.onerror = function(e: IDBEvent) {
       reject(e.target.error);
-    }
+    };
   });
-}
+};
 
 
 @Injectable()
 export class GameService implements Resolve<GameElement[]> {
-  private objectStore: IDBObjectStore;
+  private objectStore: IDBDatabase;
 
   public games: BehaviorSubject<GameElement[]>;
   // game -> games -> indexeddb
@@ -117,17 +126,18 @@ export class GameService implements Resolve<GameElement[]> {
     return this.init();
   }
 
-  init():Promise<BehaviorSubject<GameElement[]>> {
-    return (this.objectStore ? Promise.resolve(this.objectStore) : initObjectStore().then(db=>{
-      this.objectStore = db;
-      return db;
-    })).then(db=>{
-      return getAllFromStore(db, GAME_STORE_NAME).then(results => {
-        this.games = new BehaviorSubject(<GameElement[]>results.map(GameElement.fromObject.bind(GameElement)));
-        if(!this.gameSub) this.gameSub = this.monitorChanges(this.games);
-        this.ready = true;
-        return this.games;
-      });
+  init(): Promise<BehaviorSubject<GameElement[]>> {
+    let resolveStore = this.objectStore ? Promise.resolve(this.objectStore) :
+      initObjectStore(DB_NAME, STORE_VERSION).then(db => this.objectStore = db);
+
+    return resolveStore.then(db => getAllFromStore(db, GAME_STORE_NAME)).then(results => {
+      this.games = new BehaviorSubject(<GameElement[]>results.map(GameElement.fromObject.bind(GameElement)));
+      if (this.gameSub) {
+        this.gameSub.unsubscribe();
+      }
+      this.gameSub = this.monitorChanges(this.games);
+      this.ready = true;
+      return this.games;
     });
   }
 
@@ -135,14 +145,14 @@ export class GameService implements Resolve<GameElement[]> {
     // unnecessarily saves all games
     return ob.concatMap(arr => {
       return Observable.fromPromise(Promise.all(arr.map(game => {
-        return saveToStore(this.objectStore, GAME_STORE_NAME, game)
+        return saveToStore(this.objectStore, GAME_STORE_NAME, game);
       })));
-    }).subscribe(saveResult=>{
+    }).subscribe(saveResult => {
       console.log(this.games.getValue(), saveResult);
     });
   }
 
-  getGames(): Observable<any>{
+  getGames(): Observable<any> {
     return this.games.startWith(this.games.getValue());
   }
 
@@ -160,7 +170,7 @@ export class GameService implements Resolve<GameElement[]> {
   }
 
   saveGame(game) {
-    return Observable.fromPromise(saveToStore(this.objectStore, GAME_STORE_NAME, game).then(id=>{
+    return Observable.fromPromise(saveToStore(this.objectStore, GAME_STORE_NAME, game).then(id => {
       game.state = 'SAVED';
       return game;
     }));
@@ -170,9 +180,9 @@ export class GameService implements Resolve<GameElement[]> {
     // should error if game does not exist, etc
     let games = this.games.getValue();
     let i = games.indexOf(game);
-    if(i != -1) {
-      return Observable.fromPromise(removeFromStore(this.objectStore, GAME_STORE_NAME, game.id).then(id=>{
-        games.splice(i, 1)
+    if (i !== -1) {
+      return Observable.fromPromise(removeFromStore(this.objectStore, GAME_STORE_NAME, game.id).then(id => {
+        games.splice(i, 1);
         this.games.next(games);
       })).ignoreElements().concat(this.games);
     }

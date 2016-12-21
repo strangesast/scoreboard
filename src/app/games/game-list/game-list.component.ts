@@ -12,7 +12,7 @@ import { GameElement } from '../../classes';
 })
 export class GameListComponent implements OnInit {
   private games: any[] = [];
-  
+
   constructor(private gameService: GameService) { }
 
   ngOnInit() {

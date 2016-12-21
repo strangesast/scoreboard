@@ -12,7 +12,6 @@ import { GameService } from '../../game.service';
 })
 export class NewGameComponent implements OnInit {
   private savedGame: GameElement;
-
   private form: FormGroup;
   private saveError: any;
 
@@ -29,19 +28,19 @@ export class NewGameComponent implements OnInit {
   }
 
   onSubmit() {
-    if(this.form.valid) {
+    if (this.form.valid) {
       this.gameService.saveNewGame(this.form.value).subscribe(
-        (newGame)=>{
+        (newGame) => {
           this.savedGame = newGame;
         },
-        (error)=>{
+        (error) => {
           console.error('error!', error);
           this.savedGame = null;
           this.saveError = error;
         },
         () => {
           this.saveError = null;
-          setTimeout(()=>this.router.navigate(['/games'], { fragment: this.savedGame.id }), 1000);
+          setTimeout(() => this.router.navigate(['/games'], { fragment: this.savedGame.id }), 1000);
         }
       );
     }

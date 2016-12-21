@@ -17,22 +17,24 @@ import { GameElement, Timer } from '../../classes';
 export class GamePageComponent implements OnInit, OnDestroy {
   private gameSubject: BehaviorSubject<GameElement>;
   private gameSubjectSub: Subscription;
-  private game: GameElement 
+  private game: GameElement;
 
   private gameTimersSubject: BehaviorSubject<Timer[]>;
 
   private form: FormGroup;
   private isEditing: boolean = false;
-  //                                                   refresh every 0.1 s
-  private clock: Observable<any> = Observable.interval(100).share(); //share is key
+  // refresh clock every 0.1 s
+  private clock: Observable<any> = Observable.interval(100).share(); // share is key
 
   constructor(private formBuilder: FormBuilder, private gameService: GameService, private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.route.data.subscribe(({game})=>{
+    this.route.data.subscribe(({game}) => {
       this.gameSubject = game;
       this.game = game.getValue();
-      if(this.gameSubjectSub) this.gameSubjectSub.unsubscribe();
+      if (this.gameSubjectSub) {
+        this.gameSubjectSub.unsubscribe();
+      }
       this.gameSubjectSub = this.subscribeTo(this.gameSubject);
     });
     this.form = this.formBuilder.group({
@@ -48,10 +50,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
     this.gameSubjectSub.unsubscribe();
   }
 
-  subscribeTo(g):Subscription {
-    return g.subscribe(res=>{
+  subscribeTo(g): Subscription {
+    return g.subscribe(res => {
       this.isEditing = false;
-      if(this.form) {
+      if (this.form) {
         this.form.patchValue(res);
         this.form.markAsPristine();
       }
@@ -60,7 +62,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
   };
 
   onSubmit() {
-    if(this.form.valid) {
+    if (this.form.valid) {
       this.gameSubject.next(Object.assign({}, this.game, this.form.value));
     }
   }
@@ -70,7 +72,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
   }
 
   toggleEdit() {
-    if(this.isEditing && this.form) {
+    if (this.isEditing && this.form) {
       this.form.patchValue(this.game);
     }
     this.isEditing = !this.isEditing;
@@ -82,25 +84,29 @@ export class GamePageComponent implements OnInit, OnDestroy {
   }
 
   handleAction({type, target}) {
-    if(type == 'remove') {
+    if (type === 'remove') {
       this.removeTimer(target);
-    } else if (['start', 'stop', 'reset'].indexOf(type) != -1) {
+    } else if (['start', 'stop', 'reset'].indexOf(type) !== -1) {
       this.updateTimer(target);
     }
   }
 
-  removeTimer(timer:Timer) {
+  removeTimer(timer: Timer) {
     let game = this.gameSubject.getValue();
     let i = game.timers.indexOf(timer);
-    if(i == -1) throw new Error('timer already removed');
+    if (i === -1) {
+      throw new Error('timer already removed');
+    }
     game.timers.splice(i, 1);
     this.gameSubject.next(this.game);
   }
 
-  updateTimer(timer:Timer) {
+  updateTimer(timer: Timer) {
     let game = this.gameSubject.getValue();
     let i = game.timers.indexOf(timer);
-    if(i == -1) throw new Error('timer already removed');
+    if (i === -1) {
+      throw new Error('timer already removed');
+    }
     game.timers[i] = timer;
     this.gameSubject.next(this.game);
   }
