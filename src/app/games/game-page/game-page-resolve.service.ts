@@ -7,7 +7,7 @@ import { GameService } from '../game.service';
 import { GameElement }  from '../../classes';
 
 @Injectable()
-export class GamePageResolveService implements Resolve<BehaviorSubject<GameElement>> {
+export class GamePageResolveService implements Resolve<boolean|Promise<BehaviorSubject<GameElement>>> {
   private game: BehaviorSubject<GameElement>;
 
   constructor(private router: Router, private gameService: GameService) { }
@@ -38,7 +38,6 @@ export class GamePageResolveService implements Resolve<BehaviorSubject<GameEleme
     });
 
     return Promise.resolve(this.game);
-
 
     //// 'watch' for changes.  push those changes to games array
     //this.game.do(game=>{
