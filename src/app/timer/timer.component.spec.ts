@@ -4,14 +4,19 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { TimerComponent } from './timer.component';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Timer } from '../classes';
+import { TimeMsPipe } from './time-ms.pipe';
 
 describe('TimerComponent', () => {
   let component: TimerComponent;
   let fixture: ComponentFixture<TimerComponent>;
+  let timer: Timer;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TimerComponent ]
+      declarations: [ TimerComponent, TimeMsPipe ],
+      imports: [ RouterTestingModule ]
     })
     .compileComponents();
   }));
@@ -19,6 +24,10 @@ describe('TimerComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TimerComponent);
     component = fixture.componentInstance;
+
+    timer = new Timer('test', 'test timer');
+    component.timer = timer;
+
     fixture.detectChanges();
   });
 

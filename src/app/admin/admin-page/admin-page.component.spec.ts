@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { AdminPageComponent } from './admin-page.component';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('AdminPageComponent', () => {
   let component: AdminPageComponent;
@@ -11,7 +12,10 @@ describe('AdminPageComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AdminPageComponent ]
+      declarations: [ AdminPageComponent ],
+      imports [
+        RouterTestingModule
+      ]
     })
     .compileComponents();
   }));

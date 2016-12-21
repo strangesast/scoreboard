@@ -4,6 +4,8 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { GameListComponent } from './game-list.component';
+import { RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('GameListComponent', () => {
   let component: GameListComponent;
@@ -11,7 +13,8 @@ describe('GameListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GameListComponent ]
+      declarations: [ RouterModule, GameListComponent ],
+      imports: [ RouterTestingModule ]
     })
     .compileComponents();
   }));

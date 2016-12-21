@@ -3,6 +3,10 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+
+import { GameService } from '../../game.service';
 import { NewGameComponent } from './new-game.component';
 
 describe('NewGameComponent', () => {
@@ -11,7 +15,9 @@ describe('NewGameComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NewGameComponent ]
+      declarations: [ NewGameComponent ],
+      providers: [ GameService ],
+      imports: [ RouterTestingModule, FormsModule, ReactiveFormsModule ]
     })
     .compileComponents();
   }));
