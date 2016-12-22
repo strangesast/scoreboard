@@ -19,6 +19,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
   private gameSubjectSub: Subscription;
   private game: GameElement;
 
+  private scoreA: number = 0;
+  private scoreB: number = 0;
+
   private gameTimersSubject: BehaviorSubject<Timer[]>;
 
   private form: FormGroup;
@@ -62,9 +65,17 @@ export class GamePageComponent implements OnInit, OnDestroy {
     });
   };
 
+  incrementScore(team, by) {
+    if(team == 'A') {
+      this.scoreA+=Math.max(this.scoreA+by, 0);
+    } else if (team == 'B') {
+      this.scoreB+=Math.max(this.scoreB+by, 0);
+    }
+  }
+
   onSubmit() {
     if (this.form.valid) {
-      this.gameSubject.next(Object.assign({}, this.game, this.form.value));
+      this.gameSubject.next(GameElement.fromObject(Object.assign({}, this.game, this.form.value)));
     }
   }
   onCancel() {

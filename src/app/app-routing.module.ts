@@ -8,11 +8,12 @@ import { GamePageComponent } from './games/game-page/game-page.component';
 import { AdminPageComponent } from './admin/admin-page/admin-page.component';
 import { HomeComponent } from './home/home.component';
 
+import { AdminService } from './admin/admin.service';
 import { GameService } from './games/game.service';
 import { GamePageResolveService } from './games/game-page/game-page-resolve.service';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: HomeComponent, resolve: { games: GameService } },
   { path: 'games', resolve: {
     games: GameService
   }, children: [
@@ -22,7 +23,10 @@ const routes: Routes = [
       game: GamePageResolveService
     } }
   ] },
-  { path: 'admin', component: AdminPageComponent }
+  { path: 'admin', component: AdminPageComponent, resolve: {
+    admin: AdminService,
+    games: GameService
+  } }
 ];
 
 @NgModule({
@@ -34,6 +38,7 @@ const routes: Routes = [
   ],
   providers: [
     GameService,
+    AdminService,
     GamePageResolveService
   ]
 })

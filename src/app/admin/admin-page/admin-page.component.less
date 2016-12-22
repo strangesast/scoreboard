@@ -1,0 +1,28 @@
+:host > .small-container {
+  margin-top: 40px;
+  position: relative;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  & > div {
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+}
+
+.row.columns {
+  & > svg {
+    flex-basis: 100px;
+  }
+}
+
+.divider {
+  min-width: 100px;
+}
+
+.list .list-item.active {
+  font-weight: bold;
+}

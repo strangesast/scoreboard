@@ -20,7 +20,7 @@ body, html {
 .hoverdarken:hover {
   background: rgba(0,0,0,0.05) !important;
 }
-.spacer {
+.spacer, .grow {
   flex-grow: 1;
 }
 .small-container {
@@ -28,6 +28,12 @@ body, html {
   box-sizing: border-box;
   border: solid 0.1em black;
   margin: 0 auto;
+}
+@media(max-width: 400px) {
+  .small-container {
+    border-left: 0;
+    border-right: 0;
+  }
 }
 .small-container.shadow {
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
@@ -46,11 +52,22 @@ body, html {
 .list > .list-item , .list > .list-heading{
   padding: 16px 20px;
 }
+.list > .list-item {
+  box-sizing: border-box;
+}
 .list > .list-item.flex {
   display: flex;
 }
 .list > .list-item.empty {
   color: grey;
+}
+.noselect {
+  -webkit-touch-callout: none;
+     -webkit-user-select: none;
+      -khtml-user-select: none;
+        -moz-user-select: none;
+         -ms-user-select: none;
+             user-select: none;
 }
 .padded {
   padding: 16px 20px;

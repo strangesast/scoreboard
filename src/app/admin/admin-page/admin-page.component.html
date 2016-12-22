@@ -1,3 +1,21 @@
-<p>
-  admin-page works!
-</p>
+<div class="small-container shadow">
+  <div class="padded">
+    <h1>Admin</h1>
+    <p>Control connections to scoreboards</p>
+  </div>
+  <div class="row columns">
+    <div class="list grow">
+      <div *ngFor="let item of listA" (click)="stream.next(item)" class="list-item noselect hoverlink hoverdarken">{{item}}</div>
+    </div>
+    <svg width="100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path *ngFor="let item of conn" [attr.d]="calc([0, item[0]*50+25], [100, item[1]*50+25])" stroke="black" fill="transparent"/>
+    </svg>
+    <div class="list grow">
+      <div *ngFor="let item of listB" (click)="stream.next(item)" [class.active]="selectedItem == item" class="list-item noselect hoverlink hoverdarken">{{item}}</div>
+    </div>
+  </div>
+  <div class="row padded">
+    <button>Apply</button>
+    <button>Cancel</button>
+  </div>
+</div>

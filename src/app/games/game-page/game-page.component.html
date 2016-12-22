@@ -24,12 +24,16 @@
     <div class="list-item flex">
       <span>Game A</span>
       <span class="spacer"></span>
-      <span class="score">10</span>
+      <button (click)="incrementScore('A', 1)">+</button>
+      <button (click)="incrementScore('A', -1)">-</button>
+      <span class="score">{{ scoreA }}</span>
     </div>
     <div class="list-item flex">
       <span>Game B</span>
       <span class="spacer"></span>
-      <span class="score">9</span>
+      <button (click)="incrementScore('B', 1)">+</button>
+      <button (click)="incrementScore('B', -1)">-</button>
+      <span class="score">{{ scoreB }}</span>
     </div>
     <hr>
   </div>
