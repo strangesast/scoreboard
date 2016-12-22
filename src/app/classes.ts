@@ -44,7 +44,7 @@ export class Timer {
     if (this.lastStart !== -1) {
       throw new Error('already started');
     }
-    this.lastStart = Date.now();
+    Object.assign(this, {lastStop: -1, lastStart: Date.now()});
     return this.lastStart;
   }
 

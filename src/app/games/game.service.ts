@@ -64,6 +64,23 @@ function initObjectStore(name: string, version: number): Promise<any> {
   });
 };
 
+function getOneFromStore(db: IDBDatabase, storeName: string, id: string, key?: string): Promise<any> {
+  return new Promise(function(resolve, reject) {
+    let trans = db.transaction(storeName);
+    let store = <any>trans.objectStore(storeName);
+    if (key!=null) {
+      store = store.index(key);
+    }
+    let req = store.getAll();
+    req.onsuccess = function(e: IDBEvent) {
+      resolve(e.target.result);
+    };
+    req.onerror = function(e: IDBEvent) {
+      reject(e.target.error);
+    };
+  });
+}
+
 function getAllFromStore(db: IDBDatabase, storeName: string): Promise<any[]> {
   return new Promise(function(resolve, reject) {
     let trans = db.transaction(storeName);
@@ -116,6 +133,7 @@ export class GameService implements Resolve<GameElement[]> {
   // indexeddb -> games -> game
 
 
+  public loaded = {};
   public ready: boolean = false;
 
   private gameSub: Subscription;
@@ -139,6 +157,14 @@ export class GameService implements Resolve<GameElement[]> {
       this.ready = true;
       return this.games;
     });
+  }
+
+  getGameById(id:string): BehaviorSubject<GameElement> {
+    if(id in this.loaded) {
+      return this.loaded[id];
+    } else {
+      return getOneFromStore(this.objectStore, GAME_STORE_NAME, id).then(record => return new BehaviorSubject(record));
+    }
   }
 
   monitorChanges(ob) {

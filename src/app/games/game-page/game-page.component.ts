@@ -58,6 +58,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.form.markAsPristine();
       }
       this.game = res;
+      console.log('res', res);
     });
   };
 
@@ -84,6 +85,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
   }
 
   handleAction({type, target}) {
+    console.log('target', target);
     if (type === 'remove') {
       this.removeTimer(target);
     } else if (['start', 'stop', 'reset'].indexOf(type) !== -1) {
