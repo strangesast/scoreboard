@@ -1,8 +1,9 @@
 import { Resolve } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 
-import { GameService } from '../game.service';
+import { BehaviorSubject } from 'rxjs';
 
+import { GameService } from '../game.service';
 import { GameElement } from '../../classes';
 
 @Component({
@@ -11,15 +12,15 @@ import { GameElement } from '../../classes';
   styleUrls: ['./game-list.component.less']
 })
 export class GameListComponent implements OnInit {
+  private gamesSubject: BehaviorSubject<GameElement[]>;
   private games: any[] = [];
 
   constructor(private gameService: GameService) { }
 
   ngOnInit() {
-    (this.gameService.ready ? Promise.resolve() : this.gameService.init()).then(() => {
-      this.gameService.getGames().subscribe(games => {
-        this.games = games;
-      });
+    this.gamesSubject = this.gameService.getGames();
+    this.gamesSubject.subscribe(games => {
+      this.games = games;
     });
   }
 

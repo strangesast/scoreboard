@@ -32,6 +32,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     this.route.data.subscribe(({game}) => {
       this.gameSubject = game;
       this.game = game.getValue();
+      console.log(this.game);
       if (this.gameSubjectSub) {
         this.gameSubjectSub.unsubscribe();
       }
@@ -58,7 +59,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.form.markAsPristine();
       }
       this.game = res;
-      console.log('res', res);
     });
   };
 
@@ -81,7 +81,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
   createNewTimer() {
     let timer = new Timer('new timer', 'a new timer');
-    this.gameSubject.next(Object.assign({}, this.game, {timers: this.game.timers.concat(timer)}));
+    let game = this.game;
+    game.timers = game.timers.concat(timer);
+    this.gameSubject.next(game);
   }
 
   handleAction({type, target}) {

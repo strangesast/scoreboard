@@ -3,5 +3,6 @@
   <span class="spacer"></span>
   <a class="hoverunderline" routerLink="games">Games</a>
   <a class="hoverunderline" routerLink="admin">Admin</a>
+  <span>{{ (isSaving | async) ? 'Saving...' : 'Saved' }}</span>
 </nav>
 <router-outlet></router-outlet>

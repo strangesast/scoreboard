@@ -5,6 +5,8 @@ export class GameElement {
     return new GameElement(obj.id, obj.name, obj.description, obj.state, obj.timers.map(t => Timer.fromObject(t)));
   }
 
+  static excluded = ['state'];
+
   constructor (
     public id: string,
     public name: string,
@@ -12,6 +14,18 @@ export class GameElement {
     public state: SaveState = 'UNSAVED',
     public timers: Timer[] = []
   ) { }
+
+  toJSON(removeExcluded=true) {
+    let copy = Object.assign({}, this);
+    for (let prop in copy) {
+      if (GameElement.excluded.indexOf(prop) != -1) {
+        delete copy[prop];
+      } else if (Array.isArray(copy[prop])) {
+        copy[prop] = copy[prop].map(el=>typeof el.toJSON === 'function' ? el.toJSON() : el);
+      }
+    }
+    return copy;
+  }
 }
 
 export class Timer {
@@ -27,10 +41,24 @@ export class Timer {
     return t;
   }
 
+  static excluded = [];
+
   constructor(
     public name: string,
     public description: string
   ) { }
+
+  toJSON(removeExcluded=true) {
+    let copy = Object.assign({}, this);
+    for (let prop in copy) {
+      if (Timer.excluded.indexOf(prop) != -1) {
+        delete copy[prop];
+      } else if (Array.isArray(copy[prop])) {
+        copy[prop] = copy[prop].map(el=>typeof el.toJSON === 'function' ? el.toJSON() : el);
+      }
+    }
+    return copy;
+  }
 
   reset() {
     let tot = this.accum();
