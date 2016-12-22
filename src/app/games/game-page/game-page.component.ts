@@ -35,7 +35,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     this.route.data.subscribe(({game}) => {
       this.gameSubject = game;
       this.game = game.getValue();
-      console.log(this.game);
       if (this.gameSubjectSub) {
         this.gameSubjectSub.unsubscribe();
       }
@@ -66,10 +65,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
   };
 
   incrementScore(team, by) {
-    if(team == 'A') {
-      this.scoreA+=Math.max(this.scoreA+by, 0);
-    } else if (team == 'B') {
-      this.scoreB+=Math.max(this.scoreB+by, 0);
+    if (team === 'A') {
+      this.scoreA = Math.max(this.scoreA + by, 0);
+    } else if (team === 'B') {
+      this.scoreB = Math.max(this.scoreB + by, 0);
     }
   }
 

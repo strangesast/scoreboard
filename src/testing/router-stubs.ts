@@ -4,6 +4,8 @@ import { Observable, BehaviorSubject } from 'rxjs';
 
 import { GameElement } from '../app/classes';
 
+const TEST_GAME = new GameElement('0', 'test', 'test game');
+
 @Injectable()
 export class ActivatedRouteStub {
   private subject = new BehaviorSubject(this.testParams);
@@ -24,6 +26,7 @@ export class ActivatedRouteStub {
   }
 
   public data = Observable.of({
-    game: new BehaviorSubject(new GameElement('0', 'test', 'test game'))
+    game: new BehaviorSubject(TEST_GAME),
+    games: new BehaviorSubject([TEST_GAME])
   });
 }

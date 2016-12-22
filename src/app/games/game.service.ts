@@ -68,7 +68,7 @@ function getOneFromStore(db: IDBDatabase, storeName: string, id: string, key?: s
   return new Promise(function(resolve, reject) {
     let trans = db.transaction(storeName);
     let store = <any>trans.objectStore(storeName);
-    if (key!=null) {
+    if (key != null) {
       store = store.index(key);
     }
     let req = store.get(id);
@@ -125,13 +125,13 @@ function removeFromStore(db: IDBDatabase, storeName: string, id: string): Promis
 
 function unloadFunction(e) {
   let message = 'There are unsaved changes. Are you sure you want to leave?';
-  if(e) {
+  if (e) {
     e.returnValue = message;
   }
   return message;
 }
 
-function enableUnloadWarning(enabled=true) {
+function enableUnloadWarning(enabled = true) {
   window.onbeforeunload = enabled ? unloadFunction : null;
 }
 
@@ -162,21 +162,22 @@ export class GameService implements Resolve<GameElement[]> {
     return this.games.getValue().length ? Promise.resolve(this.games) : resolveStore
       .then(db => getAllFromStore(db, GAME_STORE_NAME))
       .then(results => {
-        this.games.next(<GameElement[]>results.map(GameElement.fromObject.bind(GameElement)))
+        this.games.next(<GameElement[]>results.map(GameElement.fromObject.bind(GameElement)));
         return this.games;
       });
   }
 
-  monitor(bs:BehaviorSubject<GameElement>) {
+  monitor(bs: BehaviorSubject<GameElement>) {
     // errors here are silent
     return bs
+      .skip(1)
       .switchMap(game => {
         this.isSaving.next(true);
         game.state = 'UNSAVED';
         return Observable.of(game).delay(1000);
       })
       .switchMap(game => {
-        return this.saveOne(game).then(()=>{
+        return this.saveOne(game).then(() => {
           game.state = 'SAVED';
           // this breaks if there are multiple changes (in different stream) within 1s window
           this.isSaving.next(false);
@@ -185,8 +186,8 @@ export class GameService implements Resolve<GameElement[]> {
       })
       // merge w/ game array
       .withLatestFrom(this.games)
-      .map(([game, games]:[GameElement, GameElement[]]) => {
-        let g = games.find(g => g.id==game.id)
+      .map(([game, games]: [GameElement, GameElement[]]) => {
+        let g = games.find(_g => _g.id === game.id);
         if (g == null) {
           return games.concat(game);
         } else {
@@ -194,20 +195,24 @@ export class GameService implements Resolve<GameElement[]> {
           return games;
         }
       })
-      .subscribe((val)=> this.games.next(val), (err) => console.error(err));
+      .subscribe((val) => this.games.next(val), (err) => console.error(err));
   }
 
   saveOne(game: GameElement): Promise<GameElement> {
     let obj = game.toJSON();
-    return saveToStore(this.objectStore, GAME_STORE_NAME, obj).then(()=> {
+    return saveToStore(this.objectStore, GAME_STORE_NAME, obj).then(() => {
       return game;
     });
   }
 
-  getGameById(id:string): Promise<BehaviorSubject<GameElement>> {
-    if(id in this.loaded) return Promise.resolve(this.loaded[id]);
+  getGameById(id: string): Promise<BehaviorSubject<GameElement>> {
+    if (id in this.loaded) {
+      return Promise.resolve(this.loaded[id]);
+    }
     return getOneFromStore(this.objectStore, GAME_STORE_NAME, id).then(record => {
-      if(record == null) return Promise.reject(new Error('no record with that id'));
+      if (record == null) {
+        return Promise.reject(new Error('no record with that id'));
+      }
       let bs = new BehaviorSubject(GameElement.fromObject(record));
       this.loaded[id] = bs;
       this.monitor(bs);

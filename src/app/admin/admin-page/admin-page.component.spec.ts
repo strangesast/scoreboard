@@ -6,6 +6,12 @@ import { DebugElement } from '@angular/core';
 import { AdminPageComponent } from './admin-page.component';
 import { RouterTestingModule } from '@angular/router/testing';
 
+import { ActivatedRoute } from '@angular/router'; 
+import { ActivatedRouteStub } from '../../../testing/router-stubs';
+
+import { AdminService } from '../admin.service';
+import { GameService } from '../../games/game.service';
+
 describe('AdminPageComponent', () => {
   let component: AdminPageComponent;
   let fixture: ComponentFixture<AdminPageComponent>;
@@ -13,8 +19,14 @@ describe('AdminPageComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ AdminPageComponent ],
-      imports [
-        RouterTestingModule
+      providers: [
+        AdminService,
+        GameService,
+        { provide: ActivatedRoute,
+          useClass: ActivatedRouteStub }
+      ],
+      imports: [
+        RouterTestingModule.withRoutes([]) // future routes here
       ]
     })
     .compileComponents();

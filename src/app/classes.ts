@@ -1,11 +1,11 @@
 export type SaveState = 'SAVED'|'UNSAVED';
 
 export class GameElement {
+  static excluded = ['state'];
+
   static fromObject(obj: any) {
     return new GameElement(obj.id, obj.name, obj.description, obj.state, obj.timers.map(t => Timer.fromObject(t)));
   }
-
-  static excluded = ['state'];
 
   constructor (
     public id: string,
@@ -15,13 +15,13 @@ export class GameElement {
     public timers: Timer[] = []
   ) { }
 
-  toJSON(removeExcluded=true) {
+  toJSON(removeExcluded = true) {
     let copy = Object.assign({}, this);
     for (let prop in copy) {
-      if (GameElement.excluded.indexOf(prop) != -1) {
+      if (GameElement.excluded.indexOf(prop) !== -1) {
         delete copy[prop];
       } else if (Array.isArray(copy[prop])) {
-        copy[prop] = copy[prop].map(el=>typeof el.toJSON === 'function' ? el.toJSON() : el);
+        copy[prop] = copy[prop].map(el => typeof el.toJSON === 'function' ? el.toJSON() : el);
       }
     }
     return copy;
@@ -29,6 +29,8 @@ export class GameElement {
 }
 
 export class Timer {
+  static excluded = [];
+
   public lastStart: number = -1;
   public lastStop: number = -1;
   public accumulated: number = 0;
@@ -41,20 +43,18 @@ export class Timer {
     return t;
   }
 
-  static excluded = [];
-
   constructor(
     public name: string,
     public description: string
   ) { }
 
-  toJSON(removeExcluded=true) {
+  toJSON(removeExcluded = true) {
     let copy = Object.assign({}, this);
     for (let prop in copy) {
-      if (Timer.excluded.indexOf(prop) != -1) {
+      if (Timer.excluded.indexOf(prop) !== -1) {
         delete copy[prop];
       } else if (Array.isArray(copy[prop])) {
-        copy[prop] = copy[prop].map(el=>typeof el.toJSON === 'function' ? el.toJSON() : el);
+        copy[prop] = copy[prop].map(el => typeof el.toJSON === 'function' ? el.toJSON() : el);
       }
     }
     return copy;
